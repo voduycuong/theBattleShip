@@ -87,6 +87,14 @@ int main()
             _delay_ms(300);
             orientation = !orientation;
         }
+<<<<<<< HEAD
+=======
+
+        // Replay Button - PORTA3
+        if(!(PINA & (1 << 3))){
+            replay();
+        }
+>>>>>>> minh_anh
     }
 }
 
