@@ -135,7 +135,7 @@ void move_down(bool dir)
     }
 }
 
-// Check for ships sunk
+// ===================== SHIPS ===================================
 void check_ships()
 {
     for (int i = 0; i < 8; i++)
@@ -170,9 +170,9 @@ bool hit() {
         numberOfHit++;
         for (int i = 0; i < 3; i++)
         {
-            PORTB |= (1 << PORTB5);
-            _delay_ms(200);
-            PORTB &= ~(1 << PORTB5);
+//            PORTB |= (1 << PORTB5);
+//            _delay_ms(200);
+//            PORTB &= ~(1 << PORTB5);
         }
     } 
     else if(playerMap[row][col] == '0')
@@ -207,10 +207,16 @@ bool game_over(){
         return true;
     }
 
+    if(numberOfSunk == 5) {
+        return true;
+    }
+
+    // *** LED blink blink ***
+
     for(int i = 0; i < 8; i++){
         for(int j = 0; j < 8; j++){
             if(playerMap[i][j] == '1')
-                return true;
+                return false;
         }
     }
     return false;
