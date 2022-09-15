@@ -4,13 +4,8 @@ void move_up(bool dir);
 void move_down(bool dir);
 void check_ships();
 bool hit();
-<<<<<<< HEAD
-bool check_same_position (int row, int col);
-bool game_over();
-=======
 bool game_over();
 void replay();
->>>>>>> minh_anh
 void show_coordinate(bool dir);
 void show_number(int number);
 void on_digit(int digit);
@@ -67,7 +62,6 @@ bool hit()
     int col = player[1];
 
     //check if hit same position twice
-<<<<<<< HEAD
     if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h')
     {
 //        PORTB |= (1 << PORTB5);
@@ -82,55 +76,19 @@ bool hit()
         numberOfHit++;
         for (int i = 0; i < 3; i++)
         {
-=======
-    if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h') {
-//        PORTB |= (1 << PORTB5);
-//        _delay_ms(2000);
-//        PORTB &= ~(1 << PORTB5);
-    } else if(playerMap[row][col] == '1') {
-        playerMap[row][col] = 'x';
-        result = true;
-        numberOfHit++;
-        for (int i = 0; i < 3; i++) {
->>>>>>> minh_anh
 //            PORTB |= (1 << PORTB5);
 //            _delay_ms(200);
 //            PORTB &= ~(1 << PORTB5);
         }
-<<<<<<< HEAD
     } 
     else if(playerMap[row][col] == '0')
     {
-=======
-    } else if(playerMap[row][col] == '0') {
->>>>>>> minh_anh
         playerMap[row][col] = 'm';
     }
 
     return result;
 }
 
-<<<<<<< HEAD
-/*
- * return true if shot the same position
- * return false if position never shot before
- */
-bool check_same_position (int row, int col)
-{
-    bool same = false;
-
-    if(playerMap[row][col] != '0')
-    {
-        PORTB |= (1 << PORTB5);       
-        same = true;
-    } 
-    else same = false;
-
-    return same;
-}//end of check_same_position
-
-=======
->>>>>>> minh_anh
 //done, not?
 bool game_over()
 {
@@ -153,8 +111,6 @@ bool game_over()
     return false;
 }
 
-<<<<<<< HEAD
-=======
 void replay(){
     for(int i = 0; i < 8; i++){ // reset playerMap
         for(int j = 0; j < 8; j++){
@@ -166,7 +122,6 @@ void replay(){
     numberOfSunk = 0; numberOfHit = 0; // reset sunk, shot
 }
 
->>>>>>> minh_anh
 void show_coordinate(bool dir)
 {
     short coor = 0;
