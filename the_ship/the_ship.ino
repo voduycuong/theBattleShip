@@ -5,39 +5,15 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <SevSeg.h>
+#include "functions.h"
 
 #define DELAY_TIME 200
 //#define USART_BAUDRATE 9600
 //#define BAUD_PRESCALE ((((F_CPU / 16) + (USART_BAUDRATE / 2)) / (USART_BAUDRATE )) - 1)
 
-volatile int player[2] = {0, 0};                // Row - Col
-//volatile char gameMap[8][8] = {'\0'};
-volatile int row, col;
-volatile int received = 0;
-volatile char playerMap[8][8] = {'\0'};
-volatile int shots = 16;                        // Shots left
-volatile int numberOfSunk = 0;
-volatile int numberOfHit = 0;
-
-volatile char firstDigitOfShots, secondDigitOfShots;
-
-bool game_over();
-void move_up(bool dir);
-void move_down(bool dir);
-
-bool orientation = true;
-
-char gameMap[8][8] = {'0','0','0','0','0','0','0','0',
-                      '0','1','1','0','0','0','0','0',
-                      '0','0','0','0','0','1','1','0',
-                      '0','0','0','0','0','0','0','0',
-                      '0','0','1','1','0','0','0','0',
-                      '0','0','0','0','0','0','0','0',
-                      '1','1','0','0','1','1','0','0',
-                      '0','0','0','0','0','0','0','0'};
-
 int main()
 {
+//    Serial.begin(9600);
     // OUTPUT -----------------------------------------
         // FEDCBA
     DDRD |= (1 << DDD7)|(1 << DDD6)|(1 << DDD5)|(1 << DDD4)|(1 << DDD3)|(1 << DDD1)|(1 << DDD0);
@@ -74,8 +50,18 @@ int main()
     TIMSK1 = (1 << OCIE1A);         // Enable Output Compare A Match Interrupt
     sei();                          // Enable the Global Interrupt Bit
 
+//    ADMUX &= ~(1 << REFS0);                     // Read A0
+//    _delay_ms(100);                             // Wait for Vref to settle
+//    ADCSRA |= (1 << ADEN)|(1 << ADSC);          // Convert
+//    while (bit_is_set (ADCSRA, ADSC));
+//    long result = ADCL;
+//    result |= (ADCH << 8);
+
     while(1)
     {
+        Serial.println(Vcc);
+        Vcc = result;
+         
         firstDigitOfShots = shots / 10;
         secondDigitOfShots = shots % 10;
         // Cloning Game Map
@@ -85,6 +71,7 @@ int main()
                 
         // UP Button - PORTC1
         if(!(PINC & (1 << 1))) 
+//        if (Vcc >= 500.0 && Vcc < 1000.0)
         {
             _delay_ms(300);
             move_up(orientation);
@@ -92,6 +79,7 @@ int main()
         
         // DOWN Button - PORTC2
         if(!(PINC & (1 << 2))) 
+//        if (Vcc >= 100.0 && Vcc < 500.0)
         {
             _delay_ms(300);
             move_down(orientation);
@@ -99,129 +87,17 @@ int main()
         
         // X/Y Button - PORTC0
         if(!(PINC & (1 << 0))) 
+//        if (Vcc >= 70.0 && Vcc < 100.0)
         {
             _delay_ms(300);
             orientation = !orientation;
         }
-    }
-}
-
-// MOVE PLAYER -------------------------------------------------------------
-void move_up(bool dir) 
-{
-    if(dir)                             // x direction
-    {      
-        player[0]++;
-        if (player[0] > 7) player[0] = 0;
-    } 
-    else                                // y direction
-    {                                   
-        player[1]++;
-        if (player[1] > 7) player[1] = 0;
-    }
-}
-
-void move_down(bool dir)
-{
-    if(dir)                             // x direction
-    {       
-        player[0]--;
-        if (player[0] < 0) player[0] = 7;
-    }
-    else                                // y direction
-    {                                   
-        player[1]--;
-        if (player[1] < 0) player[1] = 7;
-    }
-}
-
-// Check for ships sunk
-void check_ships()
-{
-    for (int i = 0; i < 8; i++)
-        for (int j = 0; j < 8; j++) 
-            if(playerMap[i][j] == 'x' && playerMap[i][j+1] == 'x')
-            {
-                playerMap[i][j] = 'h'; playerMap[i][j+1] = 'h';
-                numberOfSunk++;
-            }
-}
-
-/* 
- *  return false if missed, return true if hit
-*/
-bool hit() {
-    bool result = false;
-    int row = player[0];
-    int col = player[1];
-
-    //check if hit same position twice
-    if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h')
-    {
-//        PORTB |= (1 << PORTB5);
-//        _delay_ms(2000);
-//        PORTB &= ~(1 << PORTB5);
-    }
-
-    else if(playerMap[row][col] == '1')
-    {
-        playerMap[row][col] = 'x';
-        result = true;
-        numberOfHit++;
-        for (int i = 0; i < 3; i++)
-        {
-            PORTB |= (1 << PORTB5);
-            _delay_ms(200);
-            PORTB &= ~(1 << PORTB5);
-        }
-    } 
-    else if(playerMap[row][col] == '0')
-    {
-        playerMap[row][col] = 'm';
-    }
-
-    return result;
-}
-
-/*
- * return true if shot the same position
- * return false if position never shot before
- */
-bool check_same_position (int row, int col)
-{
-    bool same = false;
-
-    if(playerMap[row][col] != '0')
-    {
-        PORTB |= (1 << PORTB5);       
-        same = true;
-    } 
-    else same = false;
-
-    return same;
-}//end of check_same_position
-
-//done, not?
-bool game_over(){
-    if(shots == 0) {
-        return true;
-    }
-
-    for(int i = 0; i < 8; i++){
-        for(int j = 0; j < 8; j++){
-            if(playerMap[i][j] == '1')
-                return true;
+        
+        // Replay Button - PORTA3
+        if(!(PINC & (1 << 3))){
+            replay();
         }
     }
-    return false;
-}
-
-void show_coordinate(bool dir)
-{
-    short coor = 0;
-    if(dir) coor = player[0];
-    else if(!dir) coor = player[1];
-    show_number(coor);
 }
 
 // LED COMPOUND SCANNING --------------------------------------------------------------------------------
@@ -271,88 +147,3 @@ ISR(INT0_vect)
 //            UDR0 = '\n';
 //        }
 //}
-
-// TURN ON NUMBERS -------------------------------------------------------------------------------------
-void show_number(int number)
-{
-    switch(number)
-    {
-        case 0:
-            PORTD &= ~((1 << 6)|(1 << 5)|(1 << 4)|(1 << 3)|(1 << 1)|(1 << 0));
-            PORTD |= (1 << 7);
-            break;  
-        case 1:
-            PORTD &= ~((1 << 3)|(1 << 1));
-            PORTD |= (1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 0);
-            break;
-        case 2:
-            PORTD &= ~((1 << 7)|(1 << 5)|(1 << 4)|(1 << 1)|(1 << 0));
-            PORTD |= (1 << 6)|(1 << 3);
-            break;
-        case 3:
-            PORTD &= ~((1 << 7)|(1 << 4)|(1 << 3)|(1 << 1)|(1 << 0));
-            PORTD |= (1 << 6)|(1 << 5);
-            break;
-        case 4:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 3)|(1 << 1));
-            PORTD |= (1 << 5)|(1 << 4)|(1 << 0);
-            break;
-        case 5:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 4)|(1 << 3)|(1 << 0));
-            PORTD |= (1 << 5)|(1 << 1);
-            break;
-        case 6:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3)|(1 << 0));
-            PORTD |= (1 << 1);
-            break;
-        case 7:
-            PORTD &= ~((1 << 3)|(1 << 1)|(1 << 0));
-            PORTD |= (1 << 7)|(1 << 6)|(1 << 5)|(1 << 4);
-            break;
-        case 8:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3)|(1 << 1)|(1 << 0));
-            break;
-        case 9:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 4)|(1 << 3)|(1 << 1)|(1 << 0));
-            PORTD |= (1 << 5);
-            break;
-        case 10:
-            PORTD |= (1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3)|(1 << 1)|(1 << 0);
-            break;
-    }
-}
-
-// TURN DIGIT ON/OFF --------------------------------------------------------------------------
-void on_digit(int digit)
-{
-    switch(digit)
-    {
-        case 1:
-        PORTB |= (1 << 0);break;
-        case 2:
-        PORTB |= (1 << 1);break;
-        case 3:
-        PORTB |= (1 << 2);break;
-        case 4:
-        PORTB |= (1 << 3);break;
-        case 5:
-        PORTB |= (1 << 4);break;
-    }
-}
-
-void off_digit(int digit)
-{
-    switch(digit)
-    {
-        case 1: 
-        PORTB &= ~(1 << 0);break;
-        case 2: 
-        PORTB &= ~(1 << 1);break;
-        case 3: 
-        PORTB &= ~(1 << 2);break;
-        case 4: 
-        PORTB &= ~(1 << 3);break;
-        case 5: 
-        PORTB &= ~(1 << 4);break;
-    }
-}
