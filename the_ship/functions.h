@@ -3,7 +3,7 @@
 void move_up(bool dir);
 void move_down(bool dir);
 void check_ships();
-bool hit();
+void hit();
 bool game_over();
 void replay();
 void show_coordinate(bool dir);
@@ -67,7 +67,6 @@ void hit()
 //        PORTB &= ~(1 << PORTB5);
     } else if(playerMap[row][col] == '1') {
         playerMap[row][col] = 'x';
-        result = true;
         numberOfHit++;
         for (int i = 0; i < 3; i++) {
 //            PORTB |= (1 << PORTB5);
@@ -146,26 +145,33 @@ void show_number(int number)
             PORTD |= (1 << 5)|(1 << 4)|(1 << 0);
             break;
         case 5:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 4)|(1 << 3)|(1 << 0));
-            PORTD |= (1 << 5)|(1 << 1);
+            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 4)|(1 << 3));
+            PORTD |= (1 << 5);
+            PORTC |= (1 << 5);
+            PORTC &= ~(1 << 4);
             break;
         case 6:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3)|(1 << 0));
-            PORTD |= (1 << 1);
+            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3));
+            PORTC &= ~(1 << 4);
+            PORTC |= (1 << 5);
             break;
         case 7:
-            PORTD &= ~((1 << 3)|(1 << 1)|(1 << 0));
+            PORTD &= ~(1 << 3);
             PORTD |= (1 << 7)|(1 << 6)|(1 << 5)|(1 << 4);
+            PORTC &= ~((1 << 4)|(1 << 5));
             break;
         case 8:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3)|(1 << 1)|(1 << 0));
+            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3));
+            PORTC &= ~((1 << 4)|(1 << 5));
             break;
         case 9:
-            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 4)|(1 << 3)|(1 << 1)|(1 << 0));
+            PORTD &= ~((1 << 7)|(1 << 6)|(1 << 4)|(1 << 3));
             PORTD |= (1 << 5);
+            PORTC &= ~((1 << 4)|(1 << 5));
             break;
         case 10:
-            PORTD |= (1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3)|(1 << 1)|(1 << 0);
+            PORTD |= (1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 3);
+            PORTC |= (1 << 4)|(1 << 5);
             break;
     }
 }

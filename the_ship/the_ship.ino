@@ -50,18 +50,19 @@ int main()
     TIMSK1 = (1 << OCIE1A);         // Enable Output Compare A Match Interrupt
     sei();                          // Enable the Global Interrupt Bit
 
+    // Cloning Game Map
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            playerMap[i][j] = gameMap[i][j];
+                
     while(1)
     {
-        hit();
+        
 //        Serial.println(numberOfHit);
 //        Vcc = result;
          
         firstDigitOfShots = shots / 10;
         secondDigitOfShots = shots % 10;
-        // Cloning Game Map
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
-                playerMap[i][j] = gameMap[i][j];
                 
         // UP Button - PORTC1
         if(!(PINC & (1 << 1))) 
@@ -106,7 +107,7 @@ ISR(TIMER1_COMPA_vect)
     {
         on_digit(digitCount);
         if(digitCount == 1) show_number(numberOfSunk);
-//        else if(digitCount == 2) show_number(numberOfHit);
+        else if(digitCount == 2) show_number(numberOfHit);
         else if(digitCount == 3) show_number(firstDigitOfShots);
         else if(digitCount == 4) show_number(secondDigitOfShots);
         else if(digitCount == 5) show_coordinate(orientation);
@@ -119,21 +120,22 @@ ISR(TIMER1_COMPA_vect)
 ISR(INT0_vect)
 {
     shots--;
+    hit();
 }
 
-ISR (USART_RX_vect)
-{
-    char ReceivedByte ;         // Variable to store the data (1 byte) read from the register
-    ReceivedByte = UDR0;        // Read the received byte value
-
-    for (int i = 0; i < 8; i++)
-        for (int j = 0; j < 8; j++)  
-            game_map[i][j] = ReceivedByte;
-    
-    for (int i = 0; i < 8; i++)
-        for (int j = 0; j < 8; j++)
-        {
-            UDR0 = game_map[i][j];
-            UDR0 = '\n';
-        }
-}
+//ISR (USART_RX_vect)
+//{
+//    char ReceivedByte ;         // Variable to store the data (1 byte) read from the register
+//    ReceivedByte = UDR0;        // Read the received byte value
+//
+//    for (int i = 0; i < 8; i++)
+//        for (int j = 0; j < 8; j++)  
+//            gameMap[i][j] = ReceivedByte;
+//    
+////    for (int i = 0; i < 8; i++)
+////        for (int j = 0; j < 8; j++)
+////        {
+////            UDR0 = gameMap[i][j];
+////            UDR0 = '\n';
+////        }
+//}
