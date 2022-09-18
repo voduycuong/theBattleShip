@@ -8,13 +8,22 @@
 #include "functions.h"
 
 #define DELAY_TIME 200
+<<<<<<< HEAD
 //#define USART_BAUDRATE 9600
 //#define BAUD_PRESCALE ((((F_CPU / 16) + (USART_BAUDRATE / 2)) / (USART_BAUDRATE )) - 1)
 
 
+=======
+#define USART_BAUDRATE 9600
+#define BAUD_PRESCALE ((((F_CPU / 16) + (USART_BAUDRATE / 2)) / (USART_BAUDRATE )) - 1)
+>>>>>>> 27ab236d826afc5e617a5b870105f40657c453ec
 
 int main()
 {
+<<<<<<< Updated upstream
+=======
+    Serial.begin(9600);
+>>>>>>> Stashed changes
     // OUTPUT -----------------------------------------
         // FEDCBA
     DDRD |= (1 << DDD7)|(1 << DDD6)|(1 << DDD5)|(1 << DDD4)|(1 << DDD3)|(1 << DDD1)|(1 << DDD0);
@@ -31,17 +40,17 @@ int main()
     EICRA |= (1 << ISC01);          // Set INT0 trigger on falling-edge
     EIMSK |= (1 << INT0);           // Turns on INT0
 
-//    // UART --------------------------------------------
-//        // Setup the Baud Rate
-//    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
-//    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
-//    
-//        // Configure data format for transmission
-//    UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
-//    UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
-//    
-//        // Setup for interrupts
-//    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
+    // UART --------------------------------------------
+        // Setup the Baud Rate
+    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
+    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
+    
+        // Configure data format for transmission
+    UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
+    UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
+    
+        // Setup for interrupts
+    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
     
     // Timer 1 for scanning rate of the LED compound
     DDRB |= (1 << 5);               // Set LED as output
@@ -53,6 +62,13 @@ int main()
 
     while(1)
     {
+<<<<<<< Updated upstream
+=======
+        hit();
+//        Serial.println(numberOfHit);
+//        Vcc = result;
+         
+>>>>>>> Stashed changes
         firstDigitOfShots = shots / 10;
         secondDigitOfShots = shots % 10;
         // Cloning Game Map
@@ -80,8 +96,13 @@ int main()
             _delay_ms(300);
             orientation = !orientation;
         }
+<<<<<<< HEAD
 
         // Replay Button - PORTC3
+=======
+        
+        // Replay Button - PORTA3
+>>>>>>> 27ab236d826afc5e617a5b870105f40657c453ec
         if(!(PINC & (1 << 3))){
             replay();
         }
@@ -103,7 +124,7 @@ ISR(TIMER1_COMPA_vect)
     {
         on_digit(digitCount);
         if(digitCount == 1) show_number(numberOfSunk);
-        else if(digitCount == 2) show_number(numberOfHit);
+//        else if(digitCount == 2) show_number(numberOfHit);
         else if(digitCount == 3) show_number(firstDigitOfShots);
         else if(digitCount == 4) show_number(secondDigitOfShots);
         else if(digitCount == 5) show_coordinate(orientation);
@@ -116,22 +137,21 @@ ISR(TIMER1_COMPA_vect)
 ISR(INT0_vect)
 {
     shots--;
-    hit();
 }
 
-//ISR (USART_RX_vect)
-//{
-//    char ReceivedByte ;         // Variable to store the data (1 byte) read from the register
-//    ReceivedByte = UDR0;        // Read the received byte value
-//
-//    for (int i = 0; i < 8; i++)
-//        for (int j = 0; j < 8; j++)  
-//            game_map[i][j] = ReceivedByte;
-//    
-//    for (int i = 0; i < 8; i++)
-//        for (int j = 0; j < 8; j++)
-//        {
-//            UDR0 = game_map[i][j];
-//            UDR0 = '\n';
-//        }
-//}
+ISR (USART_RX_vect)
+{
+    char ReceivedByte ;         // Variable to store the data (1 byte) read from the register
+    ReceivedByte = UDR0;        // Read the received byte value
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)  
+            game_map[i][j] = ReceivedByte;
+    
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+        {
+            UDR0 = game_map[i][j];
+            UDR0 = '\n';
+        }
+}
