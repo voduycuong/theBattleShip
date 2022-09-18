@@ -13,10 +13,7 @@
 
 int main()
 {
-<<<<<<< Updated upstream
-=======
-    Serial.begin(9600);
->>>>>>> Stashed changes
+//    Serial.begin(9600);
     // OUTPUT -----------------------------------------
         // FEDCBA
     DDRD |= (1 << DDD7)|(1 << DDD6)|(1 << DDD5)|(1 << DDD4)|(1 << DDD3)|(1 << DDD1)|(1 << DDD0);
@@ -55,13 +52,10 @@ int main()
 
     while(1)
     {
-<<<<<<< Updated upstream
-=======
         hit();
 //        Serial.println(numberOfHit);
 //        Vcc = result;
          
->>>>>>> Stashed changes
         firstDigitOfShots = shots / 10;
         secondDigitOfShots = shots % 10;
         // Cloning Game Map
