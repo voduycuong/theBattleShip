@@ -3,11 +3,7 @@
 void move_up(bool dir);
 void move_down(bool dir);
 void check_ships();
-<<<<<<< HEAD
 bool hit();
-=======
-void hit();
->>>>>>> 27ab236d826afc5e617a5b870105f40657c453ec
 bool game_over();
 void replay();
 void show_coordinate(bool dir);
@@ -64,7 +60,6 @@ void hit()
     int row = player[0];
     int col = player[1];
 
-<<<<<<< HEAD
     //check if hit same position twice
     if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h') {
 //        PORTB |= (1 << PORTB5);
@@ -80,20 +75,6 @@ void hit()
 //            PORTB &= ~(1 << PORTB5);
         }
     } else if(playerMap[row][col] == '0') {
-=======
-    // check if hit same position twice
-    if (playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h')
-    {
-        // nháy LED
-    }
-    else if (playerMap[row][col] == '1')
-    {
-        playerMap[row][col] = 'x';
-        numberOfHit++;
-    }
-    else if (playerMap[row][col] == '0')
-    {
->>>>>>> 27ab236d826afc5e617a5b870105f40657c453ec
         playerMap[row][col] = 'm';
     }
 }
