@@ -8,8 +8,15 @@
 #include "functions.h"
 
 #define DELAY_TIME 200
+<<<<<<< HEAD
+//#define USART_BAUDRATE 9600
+//#define BAUD_PRESCALE ((((F_CPU / 16) + (USART_BAUDRATE / 2)) / (USART_BAUDRATE )) - 1)
+
+
+=======
 #define USART_BAUDRATE 9600
 #define BAUD_PRESCALE ((((F_CPU / 16) + (USART_BAUDRATE / 2)) / (USART_BAUDRATE )) - 1)
+>>>>>>> 27ab236d826afc5e617a5b870105f40657c453ec
 
 int main()
 {
@@ -83,8 +90,13 @@ int main()
             _delay_ms(300);
             orientation = !orientation;
         }
+<<<<<<< HEAD
+
+        // Replay Button - PORTC3
+=======
         
         // Replay Button - PORTA3
+>>>>>>> 27ab236d826afc5e617a5b870105f40657c453ec
         if(!(PINC & (1 << 3))){
             replay();
         }
