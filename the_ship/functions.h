@@ -3,7 +3,7 @@
 void move_up(bool dir);
 void move_down(bool dir);
 void check_ships();
-bool hit();
+void hit();
 bool game_over();
 void replay();
 void show_coordinate(bool dir);
@@ -55,38 +55,25 @@ void check_ships()
 /* 
  *  return false if missed, return true if hit
 */
-bool hit() 
+void hit()
 {
-    bool result = false;
     int row = player[0];
     int col = player[1];
 
-    //check if hit same position twice
-    if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h')
+    // check if hit same position twice
+    if (playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h')
     {
-//        PORTB |= (1 << PORTB5);
-//        _delay_ms(2000);
-//        PORTB &= ~(1 << PORTB5);
+        // nháy LED
     }
-
-    else if(playerMap[row][col] == '1')
+    else if (playerMap[row][col] == '1')
     {
         playerMap[row][col] = 'x';
-        result = true;
         numberOfHit++;
-        for (int i = 0; i < 3; i++)
-        {
-//            PORTB |= (1 << PORTB5);
-//            _delay_ms(200);
-//            PORTB &= ~(1 << PORTB5);
-        }
-    } 
-    else if(playerMap[row][col] == '0')
+    }
+    else if (playerMap[row][col] == '0')
     {
         playerMap[row][col] = 'm';
     }
-
-    return result;
 }
 
 //done, not?
