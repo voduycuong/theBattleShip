@@ -95,13 +95,13 @@ int main()
             replay();
             if(!active){
                 active = true;
-//                sei();
+                sei();
             }
         }
 
         if(active && game_over()){
             active = false;
-//            blink_game_over();
+            blink_game_over();
 //            cli();
         }
     }
@@ -111,6 +111,7 @@ int main()
 volatile char digitCount = 1, msCount = 0;
 ISR(TIMER1_COMPA_vect)
 {
+    sei();
     msCount++;
     if(msCount == 5) msCount = 0;
     off_digit(1);
@@ -134,6 +135,7 @@ ISR(TIMER1_COMPA_vect)
 // SHOOT - PORTD2 -----------------------------------------------------------------------------------------
 ISR(INT0_vect)
 {
+    sei();
     shots--;
     hit();
     _delay_ms(200);
@@ -141,13 +143,15 @@ ISR(INT0_vect)
 
 ISR (USART_RX_vect)
 {
-    char ReceivedByte ;         // Variable to store the data (1 byte) read from the register
+    char ReceivedByte;          // Variable to store the data (1 byte) read from the register
     ReceivedByte = UDR0;        // Read the received byte value
+    
+    int i, j;
 
-    byte i = 0, j = 0;
-
+    i = 0;
     while(i < 8)
     {
+        j = 0;
         while(j < 8)
         {
             if(ReceivedByte == '1' || ReceivedByte == '0')
@@ -156,5 +160,6 @@ ISR (USART_RX_vect)
                 j++;
             }
         }
+        i++;
     }
 }
