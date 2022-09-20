@@ -51,8 +51,8 @@ int main()
     sei();                          // Enable the Global Interrupt Bit
 
     // Timer 2 for blinking LEDs
-    TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);  // prescaler 1024
-    TCCR2B |= (1 << WGM21);                             // ctc mode on
+    TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);  // Prescaler 1024
+    TCCR2B |= (1 << WGM21);                             // CTC mode on
     OCR2A = 155.25;
     
     // Cloning Game Map
@@ -95,14 +95,14 @@ int main()
             replay();
             if(!active){
                 active = true;
-                sei();
+//                sei();
             }
         }
 
         if(active && game_over()){
             active = false;
-            blink_game_over();
-            cli();
+//            blink_game_over();
+//            cli();
         }
     }
 }
@@ -142,21 +142,19 @@ ISR(INT0_vect)
 ISR (USART_RX_vect)
 {
     char ReceivedByte ;         // Variable to store the data (1 byte) read from the register
-//    ReceivedByte = UDR0;        // Read the received byte value
+    ReceivedByte = UDR0;        // Read the received byte value
 
     byte i = 0, j = 0;
-    while(i < 8 && j < 8)
+
+    while(i < 8)
     {
-        ReceivedByte = UDR0;        // Read the received byte value
-        if(ReceivedByte == '1' || ReceivedByte == '0')
+        while(j < 8)
         {
-            gameMap[i][j] = ReceivedByte;
-            j++;
-        }
-        if(j == 7)
-        {
-            i++;
-            j = 0;
+            if(ReceivedByte == '1' || ReceivedByte == '0')
+            {
+                gameMap[i][j] = ReceivedByte;
+                j++;
+            }
         }
     }
 }
