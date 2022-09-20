@@ -94,6 +94,7 @@ int main()
             _delay_ms(200);
             replay();
             if(!active){
+                TCCR1B |= (1 << WGM12);
                 active = true;
                 sei();
             }
@@ -101,6 +102,7 @@ int main()
 
         if(active && game_over()){
             active = false;
+            TCCR1B &= ~(1 << WGM12);
             blink_game_over();
             cli();
         }
