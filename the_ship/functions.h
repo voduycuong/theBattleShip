@@ -123,14 +123,15 @@ void blink_game_over(){
             } else {
                 off_digit(1); off_digit(2); off_digit(3); off_digit(4); off_digit(5);
                 PORTB &= ~(1 << 5);
+                count = 0;
             }
         }
 
-        if (TIFR1 & (1 << OCF1A))   // Check if Compare Match
+        if (TIFR2 & (1 << OCF2A))   // Check if Compare Match
         {  
             count++; 
             state = !state;
-            TIFR1 |= (1 << OCF1A);  // Clear the flag
+            TIFR2 |= (1 << OCF2A);  // Clear the flag
         }
     }
 }
