@@ -51,6 +51,11 @@ int main()
     TIMSK1 = (1 << OCIE1A);         // Enable Output Compare A Match Interrupt
     sei();                          // Enable the Global Interrupt Bit
 
+    // Timer 2 for blinking LEDs
+    TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);  // prescaler 1024
+    TCCR2B |= (1 << WGM21);                             // ctc mode on
+    OCR2A = 155.25;
+    
     // Cloning Game Map
     for (int i = 0; i < 8; i++)
         for (int j = 0; j < 8; j++)
@@ -60,7 +65,6 @@ int main()
                 
     while(1)
     {
-        
 //        Serial.println(numberOfHit);
 //        Vcc = result;
          
@@ -93,12 +97,14 @@ int main()
             replay();
             if(!active){
                 active = true;
+                sei();
             }
         }
 
         if(active && game_over()){
             active = false;
             blink_game_over();
+            cli();
         }
     }
 }

@@ -15,4 +15,4 @@ volatile byte shots = 16;                        // Shots left
 volatile byte numberOfSunk = 0;
 byte numberOfHit = 0;
 volatile char firstDigitOfShots, secondDigitOfShots;
-bool orientation = true;
+bool orientation = true; // true - x, false - y
