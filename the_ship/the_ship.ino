@@ -16,7 +16,8 @@ int main()
 //    Serial.begin(9600);
     // OUTPUT -----------------------------------------
         // FEDCBA
-    DDRD |= (1 << DDD7)|(1 << DDD6)|(1 << DDD5)|(1 << DDD4)|(1 << DDD3)|(1 << DDD1)|(1 << DDD0);
+    DDRD |= (1 << DDD7)|(1 << DDD6)|(1 << DDD5)|(1 << DDD4)|(1 << DDD3);
+    DDRC |= (1 << 4)|(1 << 5);
         // D5-D1
     DDRB |= (1 << DDB4)|(1 << DDB3)|(1 << DDB2)|(1 << DDB1)|(1 << DDB0);
         // HIT LED
@@ -30,17 +31,17 @@ int main()
     EICRA |= (1 << ISC01);          // Set INT0 trigger on falling-edge
     EIMSK |= (1 << INT0);           // Turns on INT0
 
-    // UART --------------------------------------------
-        // Setup the Baud Rate
-    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
-    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
-    
-        // Configure data format for transmission
-    UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
-    UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
-    
-        // Setup for interrupts
-    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
+//    // UART --------------------------------------------
+//        // Setup the Baud Rate
+//    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
+//    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
+//    
+//        // Configure data format for transmission
+//    UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
+//    UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
+//    
+//        // Setup for interrupts
+//    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
     
     // Timer 1 for scanning rate of the LED compound
     DDRB |= (1 << 5);               // Set LED as output
@@ -54,6 +55,8 @@ int main()
     for (int i = 0; i < 8; i++)
         for (int j = 0; j < 8; j++)
             playerMap[i][j] = gameMap[i][j];
+
+    bool active = true;
                 
     while(1)
     {
@@ -65,21 +68,21 @@ int main()
         secondDigitOfShots = shots % 10;
                 
         // UP Button - PORTC1
-        if(!(PINC & (1 << 1))) 
+        if(!(PINC & (1 << 1)) && active) 
         {
             _delay_ms(300);
             move_up(orientation);
         }
         
         // DOWN Button - PORTC2
-        if(!(PINC & (1 << 2))) 
+        if(!(PINC & (1 << 2)) && active) 
         {
             _delay_ms(300);
             move_down(orientation);
         }
         
         // X/Y Button - PORTC0
-        if(!(PINC & (1 << 0))) 
+        if(!(PINC & (1 << 0)) && active) 
         {
             _delay_ms(300);
             orientation = !orientation;
@@ -88,6 +91,14 @@ int main()
         // Replay Button - PORTC3
         if(!(PINC & (1 << 3))){
             replay();
+            if(!active){
+                active = true;
+            }
+        }
+
+        if(active && game_over()){
+            active = false;
+            blink_game_over();
         }
     }
 }

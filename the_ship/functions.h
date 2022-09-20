@@ -62,23 +62,23 @@ void hit()
 
     //check if hit same position twice
     if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h') {
-//        PORTB |= (1 << PORTB5);
-//        _delay_ms(2000);
-//        PORTB &= ~(1 << PORTB5);
+        PORTB |= (1 << PORTB5);
+        _delay_ms(2000);
+        PORTB &= ~(1 << PORTB5);
     } else if(playerMap[row][col] == '1') {
         playerMap[row][col] = 'x';
         numberOfHit++;
         for (int i = 0; i < 3; i++) {
-//            PORTB |= (1 << PORTB5);
-//            _delay_ms(200);
-//            PORTB &= ~(1 << PORTB5);
+            PORTB |= (1 << PORTB5);
+            _delay_ms(200);
+            PORTB &= ~(1 << PORTB5);
         }
     } else if(playerMap[row][col] == '0') {
         playerMap[row][col] = 'm';
     }
 }
 
-//done, not?
+//done, i think?
 bool game_over()
 {
     if(shots == 0) {
@@ -88,8 +88,6 @@ bool game_over()
     if(numberOfSunk == 5) {
         return true;
     }
-
-    // *** LED blink blink ***
 
     for(int i = 0; i < 8; i++){
         for(int j = 0; j < 8; j++){
@@ -109,6 +107,18 @@ void replay(){
     shots = 16; // reset shots
     player[0] = 0; player[1] = 0; //reset player pos
     numberOfSunk = 0; numberOfHit = 0; // reset sunk, shot
+}
+
+void blink_game_over(){
+    for(int i = 0; i < 5; i++){
+        on_digit(1); on_digit(2); on_digit(3); on_digit(4); on_digit(5);
+        show_number(8);
+        PORTB |= (1 << 5);
+        _delay_ms(500);
+        off_digit(1); off_digit(2); off_digit(3); off_digit(4); off_digit(5);
+        PORTB &= ~(1 << 5);
+        _delay_ms(500);
+    }
 }
 
 void show_coordinate(bool dir)
@@ -131,7 +141,8 @@ void show_number(int number)
             break;  
         case 1:
             PORTD &= ~((1 << 3));
-            PORTD |= (1 << 7)|(1 << 6)|(1 << 5)|(1 << 4)|(1 << 0);
+            PORTD |= (1 << 7)|(1 << 6)|(1 << 5)|(1 << 4);
+            PORTC |= (1 << 4);
             PORTC &= ~(1 << 5);
             break;
         case 2:
@@ -146,9 +157,9 @@ void show_number(int number)
             break;
         case 4:
             PORTD &= ~((1 << 7)|(1 << 6)|(1 << 3));
-            PORTC &= ~(1 << 4);
+            PORTC &= ~(1 << 5);
             PORTD |= (1 << 5)|(1 << 4);
-            PORTC |= (1 << 5);
+            PORTC |= (1 << 4);
             break;
         case 5:
             PORTD &= ~((1 << 7)|(1 << 6)|(1 << 4)|(1 << 3));
