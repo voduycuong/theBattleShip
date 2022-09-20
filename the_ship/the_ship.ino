@@ -13,7 +13,6 @@
 
 int main()
 {
-//    Serial.begin(9600);
     // OUTPUT -----------------------------------------
         // FEDCBA
     DDRD |= (1 << DDD7)|(1 << DDD6)|(1 << DDD5)|(1 << DDD4)|(1 << DDD3);
