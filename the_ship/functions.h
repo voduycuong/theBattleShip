@@ -63,16 +63,15 @@ void hit()
 
     //check if hit same position twice
     if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h') {
-        PORTB |= (1 << PORTB5);
-        _delay_ms(2000);
-        PORTB &= ~(1 << PORTB5);
+//        PORTB |= (1 << PORTB5);
+//        _delay_ms(1000);
+//        PORTB &= ~(1 << PORTB5);
     } else if(playerMap[row][col] == '1') {
         playerMap[row][col] = 'x';
         numberOfHit++;
         for (int i = 0; i < 3; i++) {
-            PORTB |= (1 << PORTB5);
-            _delay_ms(200);
-            PORTB &= ~(1 << PORTB5);
+//            PORTB ^= (1 << PORTB5);
+//            _delay_ms(200);
         }
     } else if(playerMap[row][col] == '0') {
         playerMap[row][col] = 'm';
@@ -111,14 +110,28 @@ void replay(){
 }
 
 void blink_game_over(){
+    int count = 0; 
+    boolean state = true; //true to turn on, false to turn off
+    
     for(int i = 0; i < 5; i++){
-        on_digit(1); on_digit(2); on_digit(3); on_digit(4); on_digit(5);
-        show_number(8);
-        PORTB |= (1 << 5);
-        _delay_ms(500);
-        off_digit(1); off_digit(2); off_digit(3); off_digit(4); off_digit(5);
-        PORTB &= ~(1 << 5);
-        _delay_ms(500);
+        if(count == 25){
+            if(state){
+                on_digit(1); on_digit(2); on_digit(3); on_digit(4); on_digit(5);
+                show_number(8);
+                PORTB |= (1 << 5);
+                count = 0;
+            } else {
+                off_digit(1); off_digit(2); off_digit(3); off_digit(4); off_digit(5);
+                PORTB &= ~(1 << 5);
+            }
+        }
+
+        if (TIFR1 & (1 << OCF1A))   // Check if Compare Match
+        {  
+            count++; 
+            state = !state;
+            TIFR1 |= (1 << OCF1A);  // Clear the flag
+        }
     }
 }
 
