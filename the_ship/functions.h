@@ -47,7 +47,8 @@ void check_ships()
         for (int j = 0; j < 8; j++) 
             if(playerMap[i][j] == 'x' && playerMap[i][j+1] == 'x')
             {
-                playerMap[i][j] = 'h'; playerMap[i][j+1] = 'h';
+                playerMap[i][j] = 'h'; 
+                playerMap[i][j+1] = 'h';
                 numberOfSunk++;
             }
 }
@@ -227,3 +228,10 @@ void off_digit(int digit)
         PORTB &= ~(1 << 4);break;
     }
 }
+//
+//void checking()
+//{
+//    for(int i = 0; i < 8; i++)
+//        for(int j = 0; j < 8; j++)
+//        if
+//}

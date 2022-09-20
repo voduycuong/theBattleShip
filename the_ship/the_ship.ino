@@ -31,17 +31,17 @@ int main()
     EICRA |= (1 << ISC01);          // Set INT0 trigger on falling-edge
     EIMSK |= (1 << INT0);           // Turns on INT0
 
-//    // UART --------------------------------------------
-//        // Setup the Baud Rate
-//    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
-//    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
-//    
-//        // Configure data format for transmission
-//    UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
-//    UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
-//    
-//        // Setup for interrupts
-//    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
+    // UART --------------------------------------------
+        // Setup the Baud Rate
+    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
+    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
+    
+        // Configure data format for transmission
+    UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
+    UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
+    
+        // Setup for interrupts
+    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
     
     // Timer 1 for scanning rate of the LED compound
     DDRB |= (1 << 5);               // Set LED as output
@@ -59,37 +59,35 @@ int main()
     bool active = true;
                 
     while(1)
-    {
-        
-//        Serial.println(numberOfHit);
-//        Vcc = result;
-         
+    {    
         firstDigitOfShots = shots / 10;
         secondDigitOfShots = shots % 10;
                 
         // UP Button - PORTC1
         if(!(PINC & (1 << 1)) && active) 
         {
-            _delay_ms(300);
+            _delay_ms(200);
             move_up(orientation);
         }
         
         // DOWN Button - PORTC2
         if(!(PINC & (1 << 2)) && active) 
         {
-            _delay_ms(300);
+            _delay_ms(200);
             move_down(orientation);
         }
         
         // X/Y Button - PORTC0
         if(!(PINC & (1 << 0)) && active) 
         {
-            _delay_ms(300);
+            _delay_ms(200);
             orientation = !orientation;
         }
 
         // Replay Button - PORTC3
-        if(!(PINC & (1 << 3))){
+        if(!(PINC & (1 << 3)))
+        {
+            _delay_ms(200);
             replay();
             if(!active){
                 active = true;
@@ -132,21 +130,27 @@ ISR(INT0_vect)
 {
     shots--;
     hit();
+    _delay_ms(200);
 }
 
-//ISR (USART_RX_vect)
-//{
-//    char ReceivedByte ;         // Variable to store the data (1 byte) read from the register
+ISR (USART_RX_vect)
+{
+    char ReceivedByte ;         // Variable to store the data (1 byte) read from the register
 //    ReceivedByte = UDR0;        // Read the received byte value
-//
-//    for (int i = 0; i < 8; i++)
-//        for (int j = 0; j < 8; j++)  
-//            gameMap[i][j] = ReceivedByte;
-//    
-////    for (int i = 0; i < 8; i++)
-////        for (int j = 0; j < 8; j++)
-////        {
-////            UDR0 = gameMap[i][j];
-////            UDR0 = '\n';
-////        }
-//}
+
+    byte i = 0, j = 0;
+    while(i < 8 && j < 8)
+    {
+        ReceivedByte = UDR0;        // Read the received byte value
+        if(ReceivedByte == '1' || ReceivedByte == '0')
+        {
+            gameMap[i][j] = ReceivedByte;
+            j++;
+        }
+        if(j == 7)
+        {
+            i++;
+            j = 0;
+        }
+    }
+}
