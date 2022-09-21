@@ -46,10 +46,10 @@ void check_ships()
 {
     for (int i = 0; i < 8; i++)
         for (int j = 0; j < 8; j++) 
-            if(playerMap[i][j] == 'x' && playerMap[i][j+1] == 'x')
+            if(gameMap[i][j] == 'x' && gameMap[i+1][j] == 'x')
             {
-                playerMap[i][j] = 'h';
-                playerMap[i][j+1] = 'h';
+                gameMap[i][j] = 'h';
+                gameMap[i+1][j] = 'h';
                 numberOfSunk++;
             }
 }
@@ -63,31 +63,26 @@ void hit()
     int count = 0;
 
     //check if hit same position twice
-    if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h') {
+    if(gameMap[row][col] == 'x' || gameMap[row][col] == 'm' || gameMap[row][col] == 'h') 
+    {
         PORTB |= (1 << 5);
-        while(count < 50) {
-            if(count == 50) PORTB &= ~(1 << 5);
-            if (TIFR2 & (1 << OCF2A)) {
-                count ++;
-                TIFR2 |= (1 << OCF2A);
-            }
-        }
-    } else if(playerMap[row][col] == '1') {
-        playerMap[row][col] = 'x';
+        _delay_ms(1000);
+        PORTB &= ~(1 << 5);
+    }
+    else if(gameMap[row][col] == '1') 
+    {
+        gameMap[row][col] = 'x';
         numberOfHit++;
-        // blink fast twice
-        while(count < 200) {
-            if((count%50) == 0) {
-                PORTB ^= (1 << PORTB5);
-            }
 
-            if (TIFR2 & (1 << OCF2A)){  // Check if Compare Match
-                count++; 
-                TIFR2 |= (1 << OCF2A);  // Clear the flag
-            }
+        // blink fast twice
+        for (int i = 0; i < 4; i++)
+        {
+            PORTB ^= (1 << 5);
+            _delay_ms(100);
         }
-    } else if(playerMap[row][col] == '0') {
-        playerMap[row][col] = 'm';
+        
+    } else if(gameMap[row][col] == '0') {
+        gameMap[row][col] = 'm';
     }
 }
 
@@ -104,7 +99,7 @@ bool game_over()
 
     for(int i = 0; i < 8; i++){
         for(int j = 0; j < 8; j++){
-            if(playerMap[i][j] == '1')
+            if(gameMap[i][j] == '1')
                 return false;
         }
     }
@@ -112,9 +107,12 @@ bool game_over()
 }
 
 void replay(){
-    for(int i = 0; i < 8; i++){ // reset playerMap
+    for(int i = 0; i < 8; i++){ // reset gameMap
         for(int j = 0; j < 8; j++){
-            playerMap[i][j] = gameMap[i][j];
+            if(gameMap[i][j] == 'x' || gameMap[i][j] == 'h')
+                gameMap[i][j] = '1';
+            if(gameMap[i][j] == 'm')
+                gameMap[i][j] = '0';
         }
     }
     shots = 16; // reset shots

@@ -49,11 +49,7 @@ int main()
     OCR1A = 1999;                   // Set CTC compare value to 0.001s at 16 MHz AVR clock , with a prescaler of 8
     TIMSK1 = (1 << OCIE1A);         // Enable Output Compare A Match Interrupt
     sei();                          // Enable the Global Interrupt Bit
-    
-    // Cloning Game Map
-    for (int i = 0; i < 8; i++)
-        for (int j = 0; j < 8; j++)
-            playerMap[i][j] = gameMap[i][j];
+   
 
     bool active = true;
     
@@ -134,7 +130,6 @@ ISR(INT0_vect)
     shots--;
     hit();
     PORTB &= ~(1 << 5);
-    _delay_ms(200);
 }
 
 ISR(USART_RX_vect)
