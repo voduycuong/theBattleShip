@@ -56,9 +56,9 @@ int main()
             playerMap[i][j] = gameMap[i][j];
 
     bool active = true;
-                
+    
     while(1)
-    {    
+    {           
         check_ships();
         firstDigitOfShots = shots / 10;
         secondDigitOfShots = shots % 10;
@@ -137,7 +137,7 @@ ISR(INT0_vect)
     _delay_ms(200);
 }
 
-ISR (USART_RX_vect)
+ISR(USART_RX_vect)
 {
     char ReceivedByte;          // Variable to store the data (1 byte) read from the register
     ReceivedByte = UDR0;        // Read the received byte value
@@ -148,9 +148,10 @@ ISR (USART_RX_vect)
         UDR0 = gameMap[col][row];
         col++;
     }
+    
     else if(ReceivedByte == '\n')
     {
         row++;
-        col  = 0;
+        col = 0;
     }
 }
