@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 #ifndef F_CPU
 #define F_CPU 16000000UL    // Set 16 MHz clock speed
 #endif
@@ -23,38 +26,36 @@ int main()
     DDRB |= (1 << DDB5);
 
     // INPUT ------------------------------------------
-        // DOWN/UP/XY Button 
-    DDRC &= ~((1 << 2)|(1 << 1)|(1 << 0));
-        // SHOOT Button - INT0
-    DDRD &= ~(1 << 2);
-    EICRA |= (1 << ISC01);          // Set INT0 trigger on falling-edge
-    EIMSK |= (1 << INT0);           // Turns on INT0
+    DDRC &= ~((1 << 2)|(1 << 1)|(1 << 0));      // DOWN/UP/XY Button 
+    DDRD &= ~(1 << 2);                          // SHOOT Button - INT0
+    EICRA |= (1 << ISC01);                      // Set INT0 trigger on falling-edge
+    EIMSK |= (1 << INT0);                       // Turns on INT0
 
     // UART --------------------------------------------
         // Setup the Baud Rate
-    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
-    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
+    UBRR0H = (BAUD_PRESCALE >> 8);              // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
+    UBRR0L = BAUD_PRESCALE ;                    // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
     
         // Configure data format for transmission
     UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
     UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
     
         // Setup for interrupts
-    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
+    UCSR0B |= (1 << RXCIE0);                    // Enable RX Complete Interrupt
     
     // Timer 1 for scanning rate of the LED compound
-    DDRB |= (1 << 5);               // Set LED as output
-    TCCR1B |= (1 << WGM12);         // Turn on the CTC mode for Timer 1
-    TCCR1B |= (1 << CS11);          // Set up Timer 1 with the prescaler of 8
-    OCR1A = 1999;                   // Set CTC compare value to 0.001s at 16 MHz AVR clock , with a prescaler of 8
-    TIMSK1 = (1 << OCIE1A);         // Enable Output Compare A Match Interrupt
-    sei();                          // Enable the Global Interrupt Bit
-   
+    DDRB |= (1 << 5);                           // Set LED as output
+    TCCR1B |= (1 << WGM12);                     // Turn on the CTC mode for Timer 1
+    TCCR1B |= (1 << CS11);                      // Set up Timer 1 with the prescaler of 8
+    OCR1A = 1999;                               // Set CTC compare value to 0.001s at 16 MHz AVR clock , with a prescaler of 8
+    TIMSK1 = (1 << OCIE1A);                     // Enable Output Compare A Match Interrupt
+    sei();                                      // Enable the Global Interrupt Bit
 
-    bool active = true;
-    
+    // VARIABLES --------------------------------------------
+    bool active = true;             // TRUE - 
+                
     while(1)
-    {           
+    {    
         check_ships();
         firstDigitOfShots = shots / 10;
         secondDigitOfShots = shots % 10;
@@ -132,7 +133,7 @@ ISR(INT0_vect)
     PORTB &= ~(1 << 5);
 }
 
-ISR(USART_RX_vect)
+ISR (USART_RX_vect)
 {
     char ReceivedByte;          // Variable to store the data (1 byte) read from the register
     ReceivedByte = UDR0;        // Read the received byte value
@@ -143,10 +144,15 @@ ISR(USART_RX_vect)
         UDR0 = gameMap[row][col];
         col++;
     }
-    
-    else if(ReceivedByte == '\n')
+    else if(ReceivedByte == '\n' || ReceivedByte == 0x0A)
     {
         row++;
-        col = 0;
+//        UDR0 = '\n';
+        col  = 0;
     }
+
+    // Cloning Game Map
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            playerMap[i][j] = gameMap[i][j];
 }
