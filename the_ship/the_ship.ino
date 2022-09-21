@@ -139,8 +139,8 @@ ISR(USART_RX_vect)
     
     if(ReceivedByte == '0' || ReceivedByte == '1')
     {
-        gameMap[col][row] = ReceivedByte;
-        UDR0 = gameMap[col][row];
+        gameMap[row][col] = ReceivedByte;
+        UDR0 = gameMap[row][col];
         col++;
     }
     
