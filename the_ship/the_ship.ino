@@ -52,11 +52,14 @@ int main()
     sei();                                      // Enable the Global Interrupt Bit
 
     // VARIABLES --------------------------------------------
-    bool active = true;             // TRUE - 
+    bool active = true;     // TRUE - Game in process; FALSE - Game over
                 
     while(1)
     {    
+        // Check for number of ships sunk
         check_ships();
+
+        // Get each digit of number of shots to display
         firstDigitOfShots = shots / 10;
         secondDigitOfShots = shots % 10;
                 
@@ -84,18 +87,18 @@ int main()
         // Replay Button - PORTC3
         if(!(PINC & (1 << 3)))
         {
-            interrupts();
+            interrupts();       // turn on interrupts
             _delay_ms(200);
-            replay();
+            replay();           //reset game elements
             if(!active){
-                active = true;
+                active = true;  // -> game in process
             }
         }
 
         if(active && game_over()){
-            active = false;
-            noInterrupts();
-            blink_game_over();
+            active = false;     // -> game over
+            noInterrupts();     // turn off interrupts
+            blink_game_over();  // flash 7 segment leds
         }
     }
 }
@@ -104,7 +107,7 @@ int main()
 volatile char digitCount = 1, msCount = 0;
 ISR(TIMER1_COMPA_vect)
 {
-    sei();
+    sei();          // nested interrupt for uart isr
     msCount++;
     if(msCount == 5) msCount = 0;
     off_digit(1);
