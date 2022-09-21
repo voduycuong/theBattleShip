@@ -47,7 +47,7 @@ void check_ships()
         for (int j = 0; j < 8; j++) 
             if(playerMap[i][j] == 'x' && playerMap[i][j+1] == 'x')
             {
-                playerMap[i][j] = 'h'; 
+                playerMap[i][j] = 'h';
                 playerMap[i][j+1] = 'h';
                 numberOfSunk++;
             }
@@ -58,21 +58,34 @@ void check_ships()
 */
 void hit()
 {
-    int row = player[0];
-    int col = player[1];
+    int row = player[0]; int col = player[1];
+    int count = 0;
 
     //check if hit same position twice
     if(playerMap[row][col] == 'x' || playerMap[row][col] == 'm' || playerMap[row][col] == 'h') {
-//        PORTB |= (1 << PORTB5);
-//        _delay_ms(1000);
-//        PORTB &= ~(1 << PORTB5);
+        PORTB |= (1 << 5);
+        while(count < 50) {
+            if(count == 50) PORTB &= ~(1 << 5);
+            if (TIFR2 & (1 << OCF2A)) {
+                count ++;
+                TIFR2 |= (1 << OCF2A);
+            }
+        }
     } else if(playerMap[row][col] == '1') {
         playerMap[row][col] = 'x';
         numberOfHit++;
-        for (int i = 0; i < 3; i++) {
-//            PORTB ^= (1 << PORTB5);
-//            _delay_ms(200);
+        // blink fast twice
+        while(count <= 200) {
+            if((count % 50) == 0) {
+                PORTB ^= (1 << PORTB5);
+            }
+
+            if (TIFR2 & (1 << OCF2A)){  // Check if Compare Match
+                count++; 
+                TIFR2 |= (1 << OCF2A);  // Clear the flag
+            }
         }
+        PORTB &= ~(1 << 5);
     } else if(playerMap[row][col] == '0') {
         playerMap[row][col] = 'm';
     }
