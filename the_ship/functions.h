@@ -16,13 +16,13 @@ void move_up(bool dir)
 {
     if(dir)                             // x direction
     {      
-        player[0]++;
-        if (player[0] > 7) player[0] = 0;
+        player[1]++;
+        if (player[1] > 7) player[1] = 0;
     } 
     else                                // y direction
     {                                   
-        player[1]++;
-        if (player[1] > 7) player[1] = 0;
+        player[0]++;
+        if (player[0] > 7) player[0] = 0;
     }
 }
 
@@ -30,13 +30,13 @@ void move_down(bool dir)
 {
     if(dir)                             // x direction
     {       
-        player[0]--;
-        if (player[0] < 0) player[0] = 7;
+        player[1]--;
+        if (player[1] < 0) player[1] = 7;
     }
     else                                // y direction
     {                                   
-        player[1]--;
-        if (player[1] < 0) player[1] = 7;
+        player[0]--;
+        if (player[0] < 0) player[0] = 7;
     }
 }
 
@@ -139,8 +139,8 @@ void blink_game_over(){
 void show_coordinate(bool dir)
 {
     short coor = 0;
-    if(dir) coor = player[0];
-    else if(!dir) coor = player[1];
+    if(!dir) coor = player[0];  //row
+    else coor = player[1];      //col
     show_number(coor);
 }
 

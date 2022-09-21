@@ -96,7 +96,7 @@ int main()
             if(!active){
                 TCCR1B |= (1 << WGM12);
                 active = true;
-                sei();
+//                sei();
             }
         }
 
