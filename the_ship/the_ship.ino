@@ -104,47 +104,52 @@ int main()
 }
 
 // LED COMPOUND SCANNING --------------------------------------------------------------------------------
-volatile char digitCount = 1, msCount = 0;
+volatile char digitCount = 1,   // Starting from digit 0
+                msCount = 0;    // Set count
 ISR(TIMER1_COMPA_vect)
 {
     sei();          // nested interrupt for uart isr
     msCount++;
-    if(msCount == 5) msCount = 0;
+    if(msCount == 5) msCount = 0;   // Reset count when finish showing all the digits
+    // turn off all digits
     off_digit(1);
     off_digit(2);
     off_digit(3);
     off_digit(4);
     off_digit(5);
-    if(msCount < 4)
+    if(msCount < 4)                 // if scanning does not finish yet
     {
-        on_digit(digitCount);
+        on_digit(digitCount);       // Turn on digit
+        // Show all numbers
         if(digitCount == 1) show_number(numberOfSunk);
         else if(digitCount == 2) show_number(numberOfHit);
         else if(digitCount == 3) show_number(firstDigitOfShots);
         else if(digitCount == 4) show_number(secondDigitOfShots);
         else if(digitCount == 5) show_coordinate(orientation);
-        digitCount++;
-        if(digitCount > 5) digitCount = 1;
+        digitCount++;               // Continue to next digit
+        // Turn back to the first digit when finish
+        if(digitCount > 5) digitCount = 1;  
     }
 }
 
 // SHOOT - PORTD2 -----------------------------------------------------------------------------------------
 ISR(INT0_vect)
 {
-    shots--;
-    hit();
-    PORTB &= ~(1 << 5);
+    shots--;                // Decrease number of shots left
+    hit();                  // Check hit or miss
 }
 
+// UART ISR -----------------------------------------------------------------------------------------------
 ISR (USART_RX_vect)
 {
     char ReceivedByte;          // Variable to store the data (1 byte) read from the register
     ReceivedByte = UDR0;        // Read the received byte value
-    
+
+    // Receive only 0 and 1
     if(ReceivedByte == '0' || ReceivedByte == '1')
     {
-        gameMap[row][col] = ReceivedByte;
-        UDR0 = gameMap[row][col];
+        gameMap[row][col] = ReceivedByte;   // Store data to gameMap
+        UDR0 = gameMap[row][col];           // Send back to terminal for checking
         col++;
     }
     else if(ReceivedByte == '\n')

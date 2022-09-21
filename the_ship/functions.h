@@ -55,49 +55,54 @@ void check_ships()
 }
 
 /* 
- *  return false if missed, return true if hit
+ *  Checking if user hit a ship, hit the same position twice, or missed
+ *  Blink LED indicator accordingly:
+ *      - Hit -> blink fast twice
+ *      - Missed -> blink fast once
+ *      - Shot same position twice -> blink slowly once
 */
 void hit()
 {
     int row = player[0]; int col = player[1];
-    int count = 0;
 
-    //check if hit same position twice
+    // Shot same position twice
     if(gameMap[row][col] == 'x' || gameMap[row][col] == 'm' || gameMap[row][col] == 'h') 
     {
         PORTB |= (1 << 5);
         _delay_ms(1000);
         PORTB &= ~(1 << 5);
     }
-    else if(gameMap[row][col] == '1') 
-    {
+    else if(gameMap[row][col] == '1') {     // Hit
         gameMap[row][col] = 'x';
         numberOfHit++;
 
-        // blink fast twice
         for (int i = 0; i < 4; i++)
         {
             PORTB ^= (1 << 5);
             _delay_ms(100);
         }
-        
-    } else if(gameMap[row][col] == '0') {
+    } else if(gameMap[row][col] == '0') {   // Missed
         gameMap[row][col] = 'm';
+        PORTB |= (1 << 5);
+        _delay_ms(100);
+        PORTB &= ~(1 << 5);
     }
 }
 
-//done, i think?
+/*
+ * Check if game over
+ */
 bool game_over()
 {
-    if(shots == 0) {
+    if(shots == 0) {            // Run out of shots -> true
         return true;
     }
 
-    if(numberOfSunk == 5) {
+    if(numberOfSunk == 5) {     // Shot down all 5 ships -> true
         return true;
     }
 
-    for(int i = 0; i < 8; i++){
+    for(int i = 0; i < 8; i++){         // Ships left -> false
         for(int j = 0; j < 8; j++){
             if(gameMap[i][j] == '1')
                 return false;
@@ -106,8 +111,11 @@ bool game_over()
     return false;
 }
 
+/*
+ * Reset game elements
+ */
 void replay(){
-    for(int i = 0; i < 8; i++){ // reset gameMap
+    for(int i = 0; i < 8; i++){         // reset gameMap
         for(int j = 0; j < 8; j++){
             if(gameMap[i][j] == 'x' || gameMap[i][j] == 'h')
                 gameMap[i][j] = '1';
@@ -115,11 +123,14 @@ void replay(){
                 gameMap[i][j] = '0';
         }
     }
-    shots = 16; // reset shots
-    player[0] = 0; player[1] = 0; //reset player pos
-    numberOfSunk = 0; numberOfHit = 0; // reset sunk, shot
+    shots = 16;                         // reset shots
+    player[0] = 0; player[1] = 0;       //reset player pos
+    numberOfSunk = 0; numberOfHit = 0;  // reset sunk, shot
 }
 
+/*
+ * Blink all digits three times to indicate game over
+ */
 void blink_game_over(){
     for (int i = 0; i < 3; i++)
     {
@@ -131,6 +142,9 @@ void blink_game_over(){
     }
 }
 
+/*
+ * Get coordinate and show on 7 segment LED
+ */
 void show_coordinate(bool dir)
 {
     short coor = 0;
