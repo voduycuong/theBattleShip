@@ -143,19 +143,13 @@ ISR (USART_RX_vect)
     
     if(ReceivedByte == '0' || ReceivedByte == '1')
     {
-        gameMap[col][row] = ReceivedByte;
-        UDR0 = gameMap[col][row];
+        gameMap[row][col] = ReceivedByte;
+        UDR0 = gameMap[row][col];
         col++;
     }
-    else if(ReceivedByte == '\n' || ReceivedByte == 0x0A)
+    else if(ReceivedByte == '\n')
     {
         row++;
-//        UDR0 = '\n';
-        col  = 0;
+        col = 0;
     }
-
-    // Cloning Game Map
-    for (int i = 0; i < 8; i++)
-        for (int j = 0; j < 8; j++)
-            playerMap[i][j] = gameMap[i][j];
 }

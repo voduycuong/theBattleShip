@@ -46,10 +46,10 @@ void check_ships()
 {
     for (int i = 0; i < 8; i++)
         for (int j = 0; j < 8; j++) 
-            if(gameMap[i][j] == 'x' && gameMap[i+1][j] == 'x')
+            if(gameMap[i][j] == 'x' && gameMap[i][j+1] == 'x')
             {
                 gameMap[i][j] = 'h';
-                gameMap[i+1][j] = 'h';
+                gameMap[i][j+1] = 'h';
                 numberOfSunk++;
             }
 }
