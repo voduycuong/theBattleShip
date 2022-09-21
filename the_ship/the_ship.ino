@@ -131,7 +131,6 @@ ISR(INT0_vect)
     shots--;
     hit();
     PORTB &= ~(1 << 5);
-    _delay_ms(200);
 }
 
 ISR (USART_RX_vect)
