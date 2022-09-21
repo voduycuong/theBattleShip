@@ -8,8 +8,8 @@
 #include "functions.h"
 
 #define DELAY_TIME 200
-//#define USART_BAUDRATE 9600
-//#define BAUD_PRESCALE ((((F_CPU / 16) + (USART_BAUDRATE / 2)) / (USART_BAUDRATE )) - 1)
+#define USART_BAUDRATE 9600
+#define BAUD_PRESCALE ((((F_CPU / 16) + (USART_BAUDRATE / 2)) / (USART_BAUDRATE )) - 1)
 
 int main()
 {
@@ -30,17 +30,17 @@ int main()
     EICRA |= (1 << ISC01);          // Set INT0 trigger on falling-edge
     EIMSK |= (1 << INT0);           // Turns on INT0
 
-//    // UART --------------------------------------------
-//        // Setup the Baud Rate
-//    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
-//    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
-//    
-//        // Configure data format for transmission
-//    UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
-//    UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
-//    
-//        // Setup for interrupts
-//    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
+    // UART --------------------------------------------
+        // Setup the Baud Rate
+    UBRR0H = (BAUD_PRESCALE >> 8);  // Load upper 8-bits of the baud rate value into the high byte of the UBRR0H register
+    UBRR0L = BAUD_PRESCALE ;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR0L register
+    
+        // Configure data format for transmission
+    UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);     // Use 8-bit character sizes
+    UCSR0B = (1 << RXEN0) | (1 << TXEN0);       // Turn on the transmission and reception circuitry
+    
+        // Setup for interrupts
+    UCSR0B |= (1 << RXCIE0);        // Enable RX Complete Interrupt
     
     // Timer 1 for scanning rate of the LED compound
     DDRB |= (1 << 5);               // Set LED as output
@@ -61,7 +61,6 @@ int main()
             playerMap[i][j] = gameMap[i][j];
 
     bool active = true;
-    Serial.begin(9600);
                 
     while(1)
     {    
@@ -139,32 +138,28 @@ ISR(TIMER1_COMPA_vect)
 // SHOOT - PORTD2 -----------------------------------------------------------------------------------------
 ISR(INT0_vect)
 {
-    sei();
+//    sei();
     shots--;
     hit();
     PORTB &= ~(1 << 5);
     _delay_ms(200);
+//    _delay_ms(200);
 }
 
-//ISR (USART_RX_vect)
-//{
-//    char ReceivedByte;          // Variable to store the data (1 byte) read from the register
-//    ReceivedByte = UDR0;        // Read the received byte value
-//    
-//    int i, j;
-//
-//    i = 0;
-//    while(i < 8)
-//    {
-//        j = 0;
-//        while(j < 8)
-//        {
-//            if(ReceivedByte == '1' || ReceivedByte == '0')
-//            {
-//                gameMap[i][j] = ReceivedByte;
-//                j++;
-//            }
-//        }
-//        i++;
-//    }
-//}
+ISR (USART_RX_vect)
+{
+    char ReceivedByte;          // Variable to store the data (1 byte) read from the register
+    ReceivedByte = UDR0;        // Read the received byte value
+    
+    if(ReceivedByte == '0' || ReceivedByte == '1')
+    {
+        gameMap[colx][rowx] = ReceivedByte;
+        UDR0 = gameMap[colx][rowx];
+        colx++;
+    }
+    else if(ReceivedByte == '\n')
+    {
+        rowx++;
+        colx = 0;
+    }
+}
