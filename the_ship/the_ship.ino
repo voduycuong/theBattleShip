@@ -49,11 +49,6 @@ int main()
     OCR1A = 1999;                   // Set CTC compare value to 0.001s at 16 MHz AVR clock , with a prescaler of 8
     TIMSK1 = (1 << OCIE1A);         // Enable Output Compare A Match Interrupt
     sei();                          // Enable the Global Interrupt Bit
-
-    // Timer 2 for blinking LEDs
-    TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);  // Prescaler 1024
-    TCCR2B |= (1 << WGM21);                             // CTC mode on
-    OCR2A = 155.25;
     
     // Cloning Game Map
     for (int i = 0; i < 8; i++)
@@ -92,20 +87,18 @@ int main()
         // Replay Button - PORTC3
         if(!(PINC & (1 << 3)))
         {
+            interrupts();
             _delay_ms(200);
             replay();
             if(!active){
-                TCCR1B |= (1 << WGM12);
                 active = true;
-//                sei();
             }
         }
 
         if(active && game_over()){
             active = false;
-            TCCR1B &= ~(1 << WGM12);
+            noInterrupts();
             blink_game_over();
-//            cli();
         }
     }
 }
@@ -138,12 +131,10 @@ ISR(TIMER1_COMPA_vect)
 // SHOOT - PORTD2 -----------------------------------------------------------------------------------------
 ISR(INT0_vect)
 {
-//    sei();
     shots--;
     hit();
     PORTB &= ~(1 << 5);
     _delay_ms(200);
-//    _delay_ms(200);
 }
 
 ISR (USART_RX_vect)
@@ -153,13 +144,13 @@ ISR (USART_RX_vect)
     
     if(ReceivedByte == '0' || ReceivedByte == '1')
     {
-        gameMap[colx][rowx] = ReceivedByte;
-        UDR0 = gameMap[colx][rowx];
-        colx++;
+        gameMap[col][row] = ReceivedByte;
+        UDR0 = gameMap[col][row];
+        col++;
     }
     else if(ReceivedByte == '\n')
     {
-        rowx++;
-        colx = 0;
+        row++;
+        col  = 0;
     }
 }

@@ -123,28 +123,13 @@ void replay(){
 }
 
 void blink_game_over(){
-    int count = 0; 
-    boolean state = true; //true to turn on, false to turn off
-    
-    for(int i = 0; i < 5; i++){
-        if(count == 25){
-            if(state){
-                on_digit(1); on_digit(2); on_digit(3); on_digit(4); on_digit(5);
-                PORTB |= (1 << 5);
-                count = 0;
-            } else {
-                off_digit(1); off_digit(2); off_digit(3); off_digit(4); off_digit(5);
-                PORTB &= ~(1 << 5);
-                count = 0;
-            }
-        }
-
-        if (TIFR2 & (1 << OCF2A))   // Check if Compare Match
-        {  
-            count++; 
-            state = !state;
-            TIFR2 |= (1 << OCF2A);  // Clear the flag
-        }
+    for (int i = 0; i < 3; i++)
+    {
+        on_digit(1); on_digit(2); on_digit(3); on_digit(4); on_digit(5);
+        show_number(8);
+        _delay_ms(100);
+        off_digit(1); off_digit(2); off_digit(3); off_digit(4); off_digit(5);
+        _delay_ms(100);
     }
 }
 
