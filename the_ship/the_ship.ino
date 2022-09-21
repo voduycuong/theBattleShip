@@ -142,6 +142,7 @@ ISR(INT0_vect)
     sei();
     shots--;
     hit();
+    PORTB &= ~(1 << 5);
     _delay_ms(200);
 }
 

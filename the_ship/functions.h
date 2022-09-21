@@ -6,6 +6,7 @@ void check_ships();
 void hit();
 bool game_over();
 void replay();
+void blink_game_over();
 void show_coordinate(bool dir);
 void show_number(int number);
 void on_digit(int digit);
@@ -75,8 +76,8 @@ void hit()
         playerMap[row][col] = 'x';
         numberOfHit++;
         // blink fast twice
-        while(count <= 200) {
-            if((count % 50) == 0) {
+        while(count < 200) {
+            if((count%50) == 0) {
                 PORTB ^= (1 << PORTB5);
             }
 
@@ -85,7 +86,6 @@ void hit()
                 TIFR2 |= (1 << OCF2A);  // Clear the flag
             }
         }
-        PORTB &= ~(1 << 5);
     } else if(playerMap[row][col] == '0') {
         playerMap[row][col] = 'm';
     }
@@ -130,7 +130,6 @@ void blink_game_over(){
         if(count == 25){
             if(state){
                 on_digit(1); on_digit(2); on_digit(3); on_digit(4); on_digit(5);
-                show_number(8);
                 PORTB |= (1 << 5);
                 count = 0;
             } else {
